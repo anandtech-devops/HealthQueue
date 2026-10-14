@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: healthqueue-backend
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/healthqueue?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate          # schema is owned by Flyway
+    properties:
+      hibernate.jdbc.time_zone: UTC
+  flyway:
+    enabled: true
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+  metrics:
+    tags:
+      application: healthqueue
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+healthqueue:
+  jwt:
+    secret: ${JWT_SECRET}             # required, >= 32 chars; never commit a real value
+    expiration-minutes: ${JWT_EXPIRATION_MINUTES:480}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
+  queue:
+    avg-consultation-minutes: ${AVG_CONSULTATION_MINUTES:5}
+  booking:
+    max-days-ahead: ${BOOKING_MAX_DAYS_AHEAD:30}
+    allow-past-slots-today: ${BOOKING_ALLOW_PAST_SLOTS_TODAY:false}
+  timezone: ${APP_TIMEZONE:Asia/Kolkata}
+  demo:
+    seed-enabled: ${SEED_DEMO_DATA:false}
+    password: ${DEMO_PASSWORD:}
+
+logging:
+  level:
+    com.healthqueue: INFO
